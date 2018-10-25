@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body.dialog-open {
+    position: fixed;
+    width: 100%;
+}
+  </style>
+</head>
+
+<body>
+    在vue组件中，对话框弹出和关闭的地方调用上面那段JS代码
+    对话框弹出后调用
+    
+    ModalHelper.afterOpen();
+    1
+    对话框关闭前调用
+    
+    ModalHelper.beforeClose();
+    1
+    通过以上三个步骤就可以解决文章开始时所描述的问题，不仅遮罩层后的页面不会再滚动，同时如果我们的对话框中如果有内容要滚动（比如说活动规则，注册协议等这些长文本），也是能够正常滚动的。Perfect。感谢大佬为我们提供了解决方案。
+</body>
+
+</html>
+<script type="text/javascript">
+  //解决遮罩层滚动穿透问题，分别在遮罩层弹出后和关闭前调用
+  const ModalHelper = ((bodyCls) => {
+    let scrollTop;
+    return {
+      afterOpen: function () {
+        scrollTop = document.scrollingElement.scrollTop;
+        document.body.classList.add(bodyCls);
+        document.body.style.top = -scrollTop + 'px';
+      },
+      beforeClose: function () {
+        document.body.classList.remove(bodyCls);
+        // scrollTop lost after set position:fixed, restore it back.
+        document.scrollingElement.scrollTop = scrollTop;
+      }
+    };
+  })('dialog-open');
+</script>
